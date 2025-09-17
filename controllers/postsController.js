@@ -1,24 +1,14 @@
-// Importo l'array dei post
-const posts = require(`../data/posts.js`);
+const connection = require("../data/db.js")
+// // Importo l'array dei post
+// const posts = require(`../data/posts.js`);
 
 // Index
 const index = (req, res) => {
-  // res.send(`Invio dell'elenco dei post`)
-
-// Bonus:
-const title = req.query.title;
-
-// definitelyNotAnError.get(); // Per testare errori
-
-// Array post filtrati
-let filteredPosts = posts;
-// Verifico valore di title e nel caso lo filtro
-if(title){
-  filteredPosts = posts.filter(item => item.title.toLowerCase() === title.toLowerCase());
-}
-
-  // res.json(posts);
-  res.json(filteredPosts);
+  const sql = "SELECT * FROM posts";
+  connection.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results);
+  });
 };
 
 // Show
