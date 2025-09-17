@@ -2,6 +2,7 @@
 const express = require("express");
 const app = express();
 const port = 3000;
+const db = require("./data/db.js");
 
 // Importo il file router per i post
 const postsRouter = require(`./routers/postsRouter.js`);
