@@ -1,4 +1,4 @@
-const connection = require("../data/db.js")
+const connection = require("../data/db.js");
 // // Importo l'array dei post
 // const posts = require(`../data/posts.js`);
 
@@ -6,32 +6,37 @@ const connection = require("../data/db.js")
 const index = (req, res) => {
   const sql = "SELECT * FROM posts";
   connection.query(sql, (err, results) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err)
+      return res
+        .status(500)
+        .json({ error: "Errore nell'esecuzione della query" + err });
     res.json(results);
   });
 };
 
 // Show
 const show = (req, res) => {
-	const id = parseInt(req.params.id);
-	const post = posts.find(item => item.id === id);
-	// res.send(`Dettaglio del post con ID: ${id}`);
-
-  // Bonus:
-  // Verifico se il post non esiste e restituisco errore 404
-  if(!post){ res.status(404).json({error: "404 - Pagina non trovata!", message: "Il post non è presente!"})
-  };
-  res.json(post);
+  const { id } = req.params;
+  const sql = "SELECT * FROM posts WHERE id = ?";
+  connection.query(sql, [id], (err, results) => {
+    if (err)
+      return res
+        .status(500)
+        .json({ error: "Errore nell'esecuzione della query" + err });
+    if (results.length === 0)
+      return res.status(404).json({ error: "Post non trovato !" + err });
+    res.json(results[0]);
+  });
 };
 
 // Create
 const create = (req, res) => {
   // Nuovo ID per nuovo post
-  const newId = posts[posts.length -1].id +1;
+  const newId = posts[posts.length - 1].id + 1;
 
   // Implemento logica e parametri da considerare nell'inserimento
   // Destructuring del body richiesta
-  const { title, content, image, tags} = req.body;
+  const { title, content, image, tags } = req.body;
 
   // Nuovo oggetto newPost
   const newPost = {
@@ -39,7 +44,7 @@ const create = (req, res) => {
     title,
     content,
     image,
-    tags
+    tags,
   };
 
   // Pusho l'oggetto creato in posts
@@ -49,19 +54,24 @@ const create = (req, res) => {
 
   // res.json(post);
   // console.log(newId);
-	// res.send('Creazione nuovo post');
+  // res.send('Creazione nuovo post');
 };
 
 // Update
 const update = (req, res) => {
-	const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id);
   // Recupero post dall'array
-  const post = posts.find(item => item.id === id);
-  
+  const post = posts.find((item) => item.id === id);
+
   // Verifico se il post non esiste e restituisco errore 404
-  if(!post){
-    return res.status(404).json({error: "404 - Pagina non trovata!", message: "Il post non è presente!"})
-  };
+  if (!post) {
+    return res
+      .status(404)
+      .json({
+        error: "404 - Pagina non trovata!",
+        message: "Il post non è presente!",
+      });
+  }
 
   // Dati da modificare
   post.title = req.body.title;
@@ -69,25 +79,30 @@ const update = (req, res) => {
   post.image = req.body.image;
   post.tags = req.body.tags;
 
-	res.send(post);
+  res.send(post);
 };
 
 // Modify
 const modify = (req, res) => {
-	const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id);
   // Recupero post dall'array
-  const post = posts.find(item => item.id === id);
-  
+  const post = posts.find((item) => item.id === id);
+
   // Verifico se il post non esiste e restituisco errore 404
-  if(!post){
-    return res.status(404).json({error: "404 - Pagina non trovata!", message: "Il post non è presente!"})
-  };
+  if (!post) {
+    return res
+      .status(404)
+      .json({
+        error: "404 - Pagina non trovata!",
+        message: "Il post non è presente!",
+      });
+  }
 
   // Dati da modificare
 
   post.tags = req.body.tags;
   console.log(posts);
-	res.json(post);
+  res.json(post);
 };
 
 // 	res.send(`Modifica parziale del post con ID:${id}`);
@@ -95,15 +110,17 @@ const modify = (req, res) => {
 
 // Destroy
 const destroy = (req, res) => {
-const {id} = req.params;
+  const { id } = req.params;
 
-const sql = "DELETE FROM posts WHERE id = ?"
+  const sql = "DELETE FROM posts WHERE id = ?";
 
-connection.query(sql, [id], (err) => {
-  if (err) return res.status(500).json({ error : "Errore nell'esecuzione della query"+err})
+  connection.query(sql, [id], (err) => {
+    if (err)
+      return res
+        .status(500)
+        .json({ error: "Errore nell'esecuzione della query" + err });
     res.sendStatus(204);
-  })
-
+  });
 };
 
 module.exports = {
@@ -112,5 +129,5 @@ module.exports = {
   create,
   update,
   modify,
-  destroy
+  destroy,
 };
