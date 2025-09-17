@@ -95,18 +95,15 @@ const modify = (req, res) => {
 
 // Destroy
 const destroy = (req, res) => {
-  const id = parseInt(req.params.id);
-  const post = posts.find(item => item.id === id);
+const {id} = req.params;
 
-  // Bonus:
-  // Verifico se il post non esiste e restituisco errore 404
-  if(!post){ res.status(404).json({error: "404 - Pagina non trovata!", message: "Il post non è presente!"})
-  };
+const sql = "DELETE FROM posts WHERE id = ?"
 
-  posts.splice(posts.indexOf(post), 1);
-  res.sendStatus(204);
-  // res.send(`Cancellazione del post con ID:${id}`)
-  console.log(posts);
+connection.query(sql, [id], (err) => {
+  if (err) return res.status(500).json({ error : "Errore nell'esecuzione della query"+err})
+    res.sendStatus(204);
+  })
+
 };
 
 module.exports = {
