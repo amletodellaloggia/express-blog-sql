@@ -18,14 +18,33 @@ const index = (req, res) => {
 const show = (req, res) => {
   const { id } = req.params;
   const sql = "SELECT * FROM posts WHERE id = ?";
+  // Bonus
+  const tagSql = `SELECT * 
+  FROM tags
+  JOIN post_tag ON post_tag.tag_id = tags.id
+  WHERE post_tag.post_id = ?`;
+  
+  
+
   connection.query(sql, [id], (err, results) => {
     if (err)
       return res
         .status(500)
-        .json({ error: "Errore nell'esecuzione della query" + err });
+        .json({ error: "Errore nell'esecuzione della query per trovare il post" + err });
     if (results.length === 0)
       return res.status(404).json({ error: "Post non trovato !" + err });
-    res.json(results[0]);
+    // res.json(results[0]); --- commentato per Bonus
+
+    // Bonus
+    connection.query(tagSql, [id], (err, tagSqlResult) => {
+      if (err) res.status(500).json({ error: "Errore nell'esecuzione della query" + err });
+
+      const postsWithTags = {
+        ...results[0],
+        tags: tagSqlResult
+      }
+      res.json({postsWithTags})
+    })
   });
 };
 
